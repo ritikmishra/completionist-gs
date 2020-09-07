@@ -1,0 +1,4 @@
+STR_WELCOME             :Hello {COMPANY}!{}{}Welcome to Completionist!.
+
+STR_COMPLETED_TOWN          :{GREEN}{TOWN} is serviced by your company!
+STR_UNCOMPLETED_TOWN        :{RED}{TOWN} is not serviced by your company!
