@@ -14,10 +14,12 @@ function Completionist::Save()
 	if (!this._init_done) {
 		return this._loaded_data != null ? this._loaded_data : {};
 	}
-
+	local company_tables = {};
+	foreach(cid, company in this._companies) {
+		company_tables[cid] <- company.AsTable();
+	}
 	return { 
-		companies = this._companies,
-		//some_other_data = this._some_variable,
+		companies = company_tables,
 	};
 }
 

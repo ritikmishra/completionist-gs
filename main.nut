@@ -24,6 +24,7 @@ Story <- SuperLib.Story;
 
 /** Import other source code files **/
 require("version.nut"); // get SELF_VERSION
+require("dataclasses.nut");
 const TICKS_PER_DAY = 74;
 
 
@@ -39,12 +40,22 @@ class Completionist extends GSController
 	_cargo_ids = [];
 	_goal_ids = [];
 
+	_default_associated_goals = {};
+
 	_completion_rating_threshold = [];
 
 	// true if we are running from a loaded game
 	_loaded_from_save = false;
 
 	constructor() {}
+
+	function _get_default_associated_goals() {
+		local _default_associated_goals = {};
+		foreach(townid, _ in this._town_ids){
+			_default_associated_goals[townid] <- null;
+		}
+		return _default_associated_goals;
+	}
 }
 
 
@@ -95,7 +106,10 @@ function Completionist::Init()
 	}
 
 	if(this._loaded_data != null) {
-		this._companies = this._loaded_data.companies;
+		this._companies = {};
+		foreach(cid, company_table in this._loaded_data.companies) {
+			this._companies[cid] <- Company.FromTable(company_table);
+		}
 
 		this._loaded_data = null;
 	}
@@ -103,8 +117,9 @@ function Completionist::Init()
 	this._completion_rating_threshold = 25;
 
 	local townlist = GSTownList();
-	foreach(townid, _ in townlist){
+	foreach(townid, _ in townlist) {
 		this._town_ids.append(townid);
+		this._default_associated_goals[townid] <- null;
 	}
 
 	local cargolist = GSCargoList();
