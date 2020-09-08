@@ -7,7 +7,7 @@
  */
 function Completionist::Save()
 {
-	Log.Info("Saving data to savegame", Log.LVL_INFO);
+	GSLog.Info("Saving data to savegame");
 
 	// In case (auto-)save happens before we have initialized all data,
 	// save the raw _loaded_data if available or an empty table.
@@ -29,7 +29,7 @@ function Completionist::Save()
  */
 function Completionist::Load(version, tbl)
 {
-	Log.Info("Loading data from savegame made with version " + version + " of the game script", Log.LVL_INFO);
+	GSLog.Info("Loading data from savegame made with version " + version + " of the game script");
 
 	// Store a copy of the table from the save game
 	// but do not process the loaded data yet. Wait with that to Init

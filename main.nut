@@ -1,28 +1,4 @@
-/** Import SuperLib for GameScript **/
 
-import("Util.SuperLib", "SuperLib", 40);
-Result <- SuperLib.Result;
-Log <- SuperLib.Log;
-Helper <- SuperLib.Helper;
-Tile <- SuperLib.Tile;
-Direction <- SuperLib.Direction;
-Town <- SuperLib.Town;
-Industry <- SuperLib.Industry;
-Story <- SuperLib.Story;
-
-// Additional SuperLib sub libraries can be found here:
-// http://dev.openttdcoop.org/projects/superlib/repository
-
-/** Import other libs **/
-// There are several other libraries for Game Scripts out there. Check out
-// http://bananas.openttd.org/en/gslibrary/ for an up to date list.
-//
-// Remember to set dependencies in the bananas web manager for all libraries
-// that you use. This way users will automatically get all libraries of the
-// version you selected when they download your Game Script.
-
-
-/** Import other source code files **/
 require("version.nut"); // get SELF_VERSION
 require("dataclasses.nut");
 const TICKS_PER_DAY = 74;
@@ -61,13 +37,6 @@ class Completionist extends GSController
 
 function Completionist::Start()
 {
-	// Some OpenTTD versions are affected by a bug where all API methods
-	// that create things in the game world during world generation will
-	// return object id 0 even if the created object has a different ID. 
-	// In that case, the easiest workaround is to delay Init until the 
-	// game has started.
-	if (Helper.HasWorldGenBug()) GSController.Sleep(1);
-
 	this.Init();
 
 	// Wait for the game to start (or more correctly, tell OpenTTD to not
