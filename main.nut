@@ -1,6 +1,7 @@
 
 require("version.nut"); // get SELF_VERSION
 require("dataclasses.nut");
+require("completion_checkers.nut");
 const TICKS_PER_DAY = 74;
 
 
@@ -22,6 +23,8 @@ class Completionist extends GSController
 
 	// true if we are running from a loaded game
 	_loaded_from_save = false;
+
+	_completion_checker = null;
 
 	constructor() {}
 
@@ -96,6 +99,8 @@ function Completionist::Init()
 		this._cargo_ids.append(cargoid);
 	}
 
+	this._completion_checker = PAXMCompletionDetector();
+	this._completion_checker.Init();
 	// Indicate that all data structures has been initialized/restored.
 	this._init_done = true;
 }

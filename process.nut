@@ -23,8 +23,8 @@ function Completionist::HandleEvents() {
 				local new_company_event = GSEventCompanyNew.Convert(event);
 				local cid = new_company_event.GetCompanyID();
 				
-				this._companies[cid] <- Company(cid, this._default_associated_goals);
-				
+				this._companies[cid] <- Company(cid, {});
+				this._completion_checker.InitAssociatedGoals(this._companies[cid]);
 				GSGoal.Question(0, cid, GSText(GSText.STR_WELCOME), GSGoal.QT_INFORMATION, GSGoal.BUTTON_START);
 				GSLog.Info("Found new company! " + cid);
 
@@ -35,71 +35,7 @@ function Completionist::HandleEvents() {
 }
 
 function Completionist::RecomputeCompletion(cid) {
-
-	local station_list = GSStationList(GSStation.STATION_ANY);
-	local this_company_station_ids = [];
-	// table between town ID and the station that gives presence
-	// use a table like a set 
-	local towns_with_our_presence = {};
-	
-	foreach(station_id, _ in station_list) {
-		if(GSStation.GetOwner(station_id) == cid) {
-			this_company_station_ids.append(cid);
-			local station_location = GSStation.GetLocation(station_id); // TileIndex
-			local local_authority = GSTile.GetTownAuthority(station_location); // TownID
-
-			GSLog.Info("Checking to see if station " + GSStation.GetName(station_id) + " of company " + cid + "will count");
-
-			if( !(local_authority in towns_with_our_presence) ) {
-				foreach(cargoid in this._cargo_ids) {
-					if(GSStation.HasCargoRating(station_id, cargoid)) {
-						if(GSStation.GetCargoRating(station_id, cargoid) > this._completion_rating_threshold) {
-							towns_with_our_presence[local_authority] <- station_location;
-							GSLog.Info("it did");
-						}
-					}
-				}
-			}
-		}
-	}
-
-
-	local company = this._companies[cid];
-
-	foreach(local_authority, old_goal in company.associated_goals) {
-		local town_name = GSTown.GetName(local_authority);
-		local completed_town = local_authority in towns_with_our_presence;
-
-		if(old_goal == null) {
-			local new_goal_id = null;
-			if(completed_town) {
-				new_goal_id = GSGoal.New(cid, GSText(GSText.STR_COMPLETED_TOWN, local_authority), GSGoal.GT_TILE, towns_with_our_presence[local_authority]);	
-				GSGoal.SetCompleted(new_goal_id, false);
-				GSLog.Info("new goal, town name " + GSTown.GetName(local_authority) + ", completed");
-			} else {
-				new_goal_id = GSGoal.New(cid, GSText(GSText.STR_UNCOMPLETED_TOWN, local_authority), GSGoal.GT_TOWN, local_authority);	
-				GSGoal.SetCompleted(new_goal_id, true);
-				GSLog.Info("new goal, town name " + GSTown.GetName(local_authority) + ", not completed");
-			}
-
-			if(new_goal_id == GSGoal.GOAL_INVALID) {
-				GSLog.Warning("problem creating goal");
-			}
-			this._goal_ids.append(new_goal_id);
-			company.associated_goals[local_authority] = Goal(new_goal_id, local_authority);
-		} else {
-			if(completed_town) {
-				GSGoal.SetText(old_goal.goal_id, GSText(GSText.STR_COMPLETED_TOWN, local_authority));
-				GSGoal.SetCompleted(old_goal.goal_id, true);
-				GSLog.Info("old goal, town name " + GSTown.GetName(local_authority) + ", completed");
-			} else {
-				GSGoal.SetText(old_goal.goal_id, GSText(GSText.STR_UNCOMPLETED_TOWN, local_authority));
-				GSGoal.SetCompleted(old_goal.goal_id, false);
-				GSLog.Info("old goal, town name " + GSTown.GetName(local_authority) + ", not completed");
-			}
-		}
-	}	
-
+	this._completion_checker.RecomputeCompanyCompletion(this._companies[cid]);
 }
 
 function Completionist::Process() {

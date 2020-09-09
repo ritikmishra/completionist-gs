@@ -14,6 +14,8 @@ class CompletionistInfo extends GSInfo {
 	function GetSettings() {
 		AddSetting({name = "log_level", description = "Debug: Log level (higher = print more)", easy_value = 3, medium_value = 3, hard_value = 3, custom_value = 3, flags = CONFIG_INGAME, min_value = 1, max_value = 3});
 		AddLabels("log_level", {_1 = "1: Info", _2 = "2: Verbose", _3 = "3: Debug" } );
+
+		AddSetting({name = "rating_threshold", description = "Minimum Station Rating required to consider a city 'serviced'", easy_value = 20, medium_value = 66, hard_value = 75, custom_value = 20, flags = CONFIG_INGAME, min_value = 0, max_value = 99});
 	}
 }
 
